@@ -1,0 +1,17 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Production
+        run: |
+          echo "Deployment would happen here"
+          echo "Configure with your hosting provider (Vercel, Railway, etc.)"

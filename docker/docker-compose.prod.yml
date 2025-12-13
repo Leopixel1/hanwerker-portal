@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: handwerker-app
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://handwerker:handwerker_prod@postgres:5432/handwerker_portal
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: handwerker-db-prod
+    environment:
+      POSTGRES_USER: handwerker
+      POSTGRES_PASSWORD: handwerker_prod
+      POSTGRES_DB: handwerker_portal
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U handwerker"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

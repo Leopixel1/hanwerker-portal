@@ -1,0 +1,173 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  subdomain String?  @unique
+  logo      String?
+  colors    Json?    // { primary: "#...", secondary: "#..." }
+  settings  Json?    // Additional tenant settings
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users     User[]
+  customers Customer[]
+  offers    Offer[]
+  invoices  Invoice[]
+  materials Material[]
+
+  @@index([slug])
+  @@index([subdomain])
+}
+
+enum UserRole {
+  ADMIN
+  HANDWERKER
+  KUNDE
+}
+
+model User {
+  id          String   @id @default(cuid())
+  tenantId    String
+  clerkUserId String?  @unique
+  email       String
+  name        String
+  role        UserRole @default(HANDWERKER)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+  @@index([clerkUserId])
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  tenantId  String
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  city      String?
+  zipCode   String?
+  country   String?  @default("Deutschland")
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  offers   Offer[]
+  invoices Invoice[]
+
+  @@index([tenantId])
+  @@index([email])
+}
+
+enum OfferStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  DECLINED
+}
+
+model Offer {
+  id          String      @id @default(cuid())
+  tenantId    String
+  customerId  String
+  offerNumber String
+  status      OfferStatus @default(DRAFT)
+  title       String
+  description String?
+  items       Json        // Array of { name, quantity, unit, price, total }
+  subtotal    Float
+  taxRate     Float       @default(19)
+  taxAmount   Float
+  total       Float
+  validUntil  DateTime?
+  pdfUrl      String?
+  sentAt      DateTime?
+  acceptedAt  DateTime?
+  declinedAt  DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  invoices Invoice[]
+
+  @@unique([tenantId, offerNumber])
+  @@index([tenantId])
+  @@index([customerId])
+  @@index([status])
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  tenantId      String
+  customerId    String
+  offerId       String?
+  invoiceNumber String
+  status        InvoiceStatus @default(DRAFT)
+  title         String
+  description   String?
+  items         Json          // Array of { name, quantity, unit, price, total }
+  subtotal      Float
+  taxRate       Float         @default(19)
+  taxAmount     Float
+  total         Float
+  dueDate       DateTime
+  pdfUrl        String?
+  sentAt        DateTime?
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  offer    Offer?    @relation(fields: [offerId], references: [id])
+
+  @@unique([tenantId, invoiceNumber])
+  @@index([tenantId])
+  @@index([customerId])
+  @@index([status])
+  @@index([offerId])
+}
+
+model Material {
+  id          String   @id @default(cuid())
+  tenantId    String
+  name        String
+  description String?
+  unit        String   @default("Stück") // Stück, m, m², m³, kg, etc.
+  price       Float
+  category    String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([category])
+}
