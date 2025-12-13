@@ -1,0 +1,67 @@
+name: Bug Report
+description: Melde einen Bug
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke für das Melden eines Bugs! Bitte fülle die folgenden Felder aus.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Beschreibung des Bugs
+      description: Eine klare und prägnante Beschreibung des Bugs
+      placeholder: Was ist passiert?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Schritte zur Reproduktion
+      description: Schritte um das Problem zu reproduzieren
+      placeholder: |
+        1. Gehe zu '...'
+        2. Klicke auf '...'
+        3. Scrolle zu '...'
+        4. Sehe Fehler
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Erwartetes Verhalten
+      description: Was sollte stattdessen passieren?
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Falls zutreffend, füge Screenshots hinzu
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Umgebung
+      description: |
+        Beispiele:
+          - OS: Ubuntu 22.04
+          - Node: 20.10.0
+          - Browser: Chrome 120
+      value: |
+        - OS:
+        - Node:
+        - Browser:
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Zusätzlicher Kontext
+      description: Weitere Informationen zum Problem
