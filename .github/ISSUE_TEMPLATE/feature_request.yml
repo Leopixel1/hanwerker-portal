@@ -1,0 +1,38 @@
+name: Feature Request
+description: Schlage ein neues Feature vor
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke für deinen Feature-Vorschlag!
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem-Beschreibung
+      description: Beschreibe das Problem, das dieses Feature lösen würde
+      placeholder: Ich bin frustriert, wenn...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Vorgeschlagene Lösung
+      description: Wie sollte das Feature funktionieren?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativen
+      description: Hast du andere Lösungen in Betracht gezogen?
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Zusätzlicher Kontext
+      description: Screenshots, Mockups oder andere relevante Informationen
